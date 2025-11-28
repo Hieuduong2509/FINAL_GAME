@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/ivTicketStatus"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@android:drawable/checkbox_on_background"
+            app:tint="#28A745"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="Trạng thái vé"/>
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/ivEventImage"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@android:drawable/ic_menu_gallery"
+            android:scaleType="centerCrop"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.MediumComponent"
+            android:layout_marginEnd="12dp"
+            android:background="#E0E0E0"/>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvEventName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Tên Sự Kiện Đã Thanh Toán"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:textColor="#176B87"/>
+
+            <TextView
+                android:id="@+id/tvTicketCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Mã vé: #AD2025"
+                android:textColor="#333333"
+                android:layout_marginTop="4dp"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tvTicketStatusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Đã thanh toán (Chưa điểm danh)"
+                android:textColor="#28A745"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp"
+                android:textSize="12sp"/>
+
+        </LinearLayout>
+
+        <!-- Nút Scan QR -->
+        <ImageButton
+            android:id="@+id/btnScanTicket"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Quét mã QR điểm danh"
+            android:src="@android:drawable/ic_menu_camera"
+            app:tint="#176B87"
+            android:padding="8dp"/>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

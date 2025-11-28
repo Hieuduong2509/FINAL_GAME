@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Cho phép Cleartext (HTTP) cho các domain sau -->
+        <domain includeSubdomains="true">10.0.2.2</domain> <!-- Emulator -->
+        <domain includeSubdomains="true">127.0.0.1</domain> <!-- Localhost -->
+        <!-- Nếu dùng thiết bị thật, thay 192.168.X.Y bằng IP máy tính của bạn -->
+    </domain-config>
+
+    <!-- (Tùy chọn) Cho phép HTTPS cho toàn bộ các domain khác (mặc định) -->
+    <base-config>
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+</network-security-config>

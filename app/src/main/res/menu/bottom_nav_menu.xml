@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/person_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:title="Trang chính" />
+
+    <item
+        android:id="@+id/nav_voucher"
+        android:icon="@drawable/featured_seasonal_and_gifts_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:title="Ưu đãi" />
+
+    <item
+        android:id="@+id/nav_ticket"
+        android:icon="@drawable/confirmation_number_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:title="Đặt Vé" />
+    <item
+        android:id="@+id/nav_order"
+        android:icon="@drawable/shopping_bag_speed_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:title="Giỏ Hàng" />
+
+
+
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/person_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:title="Tôi" />
+</menu>
