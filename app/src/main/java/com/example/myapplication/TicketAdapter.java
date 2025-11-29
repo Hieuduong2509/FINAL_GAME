@@ -1,4 +1,3 @@
-// 1. Đảm bảo package là com.example.myapplication
 package com.example.myapplication;
 
 import android.content.Context;
@@ -34,32 +33,49 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketView
     @Override
     public void onBindViewHolder(@NonNull TicketViewHolder holder, int position) {
         Ticket ticket = ticketList.get(position);
+
+        // 1. DỮ LIỆU CƠ BẢN (tên, địa điểm)
         holder.tvEventName.setText(ticket.eventName);
-        holder.tvDate.setText("📅 " + ticket.dateTime);
         holder.tvLocation.setText("📍 " + ticket.location);
-        holder.tvSeat.setText("Ghế: " + ticket.seat);
-        holder.tvTicketCode.setText("Mã vé: " + ticket.code);
-        holder.tvTotalTicket.setText("Số lượng: "+ticket.total);
-        holder.tvRemainedTicket.setText("Còn trống: "+ticket.remain);
+        holder.tvDate.setText("📅 " + ticket.getDateTime()); // Lấy ngày giờ đã format
 
-        // 🔹 2. SỬA LOGIC NÚT "THÊM VÀO GIỎ" 🔹
-        holder.btnBuyTicket.setOnClickListener(v -> {
-            // (Sau này bạn sẽ thêm logic thêm vào CSDL/Giỏ hàng ở đây)
-            Toast.makeText(v.getContext(), "Đã thêm '" + ticket.eventName + "' vào giỏ", Toast.LENGTH_SHORT).show();
-        });
+        // 2. HIỂN THỊ GIÁ VÀ ID
+        holder.tvSeat.setText(ticket.getSeat());
+        holder.tvTicketCode.setText(ticket.getCode());
 
-        // 🔹 3. SỬA LOGIC NÚT "CHI TIẾT" 🔹
+        // 3. HIỂN THỊ SỐ GHẾ THỰC TẾ
+        if (ticket.total > 0) {
+            holder.tvTotalTicket.setText("Số lượng: " + ticket.total);
+            holder.tvRemainedTicket.setText("Còn trống: " + ticket.remain);
+        } else {
+            holder.tvTotalTicket.setText("Số lượng: Đang tải...");
+            holder.tvRemainedTicket.setText("Còn trống: N/A");
+        }
+
+        // 💡 4. LOGIC CHUYỂN SANG TRANG CHI TIẾT
         holder.btnShare.setOnClickListener(v -> {
             Context context = v.getContext();
-
-            // Mở trang chi tiết (TicketDetailActivity)
             Intent intent = new Intent(context, TicketDetailActivity.class);
 
-            // Gửi dữ liệu của vé này sang trang chi tiết
+            // TRUYỀN TẤT CẢ CÁC TRƯỜNG DỮ LIỆU CẦN THIẾT
+            intent.putExtra("EVENT_ID", ticket.getEventId());
             intent.putExtra("EVENT_NAME", ticket.eventName);
+            intent.putExtra("EVENT_DATETIME", ticket.getDateTime()); // 💡 ĐÃ SỬA: TRUYỀN NGÀY GIỜ ĐÃ FORMAT
+            intent.putExtra("EVENT_LOCATION", ticket.location);     // 💡 ĐÃ SỬA: TRUYỀN ĐỊA ĐIỂM
+
+            context.startActivity(intent);
+        });
+
+        // 💡 LOGIC NÚT MUA VÉ NGAY
+        holder.btnBuyTicket.setOnClickListener(v -> {
+            Toast.makeText(v.getContext(), "Đã chọn '" + ticket.eventName + "' (Price: " + ticket.getPrice() + ")", Toast.LENGTH_SHORT).show();
+            // CHUYỂN SANG TRANG CHỌN GHẾ
+            Context context = v.getContext();
+            Intent intent = new Intent(context, SelectSeatActivity.class);
+            intent.putExtra("EVENT_ID", ticket.getEventId());
+            // TRUYỀN CÁC TRƯỜNG CẦN THIẾT CHO SELECT SEAT
+            intent.putExtra("EVENT_DATETIME", ticket.getDateTime());
             intent.putExtra("EVENT_LOCATION", ticket.location);
-            intent.putExtra("EVENT_DATE", ticket.dateTime);
-            intent.putExtra("EVENT_CODE", ticket.code); // Gửi cả code vé đi
 
             context.startActivity(intent);
         });
@@ -82,7 +98,7 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.TicketView
             tvSeat = itemView.findViewById(R.id.tvSeat);
             tvTicketCode = itemView.findViewById(R.id.tvTicketCode);
             btnBuyTicket = itemView.findViewById(R.id.btnBuyTicket);
-            btnShare = itemView.findViewById(R.id.btnShare); // ID vẫn là btnShare
+            btnShare = itemView.findViewById(R.id.btnShare);
             tvTotalTicket = itemView.findViewById(R.id.totalTicket);
             tvRemainedTicket = itemView.findViewById(R.id.remainedTicket);
         }

@@ -259,6 +259,7 @@
                     </LinearLayout>
                 </HorizontalScrollView>
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -276,66 +277,17 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <HorizontalScrollView
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_featured_events"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     android:clipToPadding="false"
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
-                            android:layout_height="100dp"
-                            android:layout_marginEnd="12dp"
-                            app:cardBackgroundColor="#176B87"
-                            app:cardCornerRadius="8dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Nội dung tin tức 1..."
-                                android:textColor="@android:color/white" />
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
-                            android:layout_height="100dp"
-                            android:layout_marginEnd="12dp"
-                            app:cardBackgroundColor="#176B87"
-                            app:cardCornerRadius="8dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Nội dung tin tức 2..."
-                                android:textColor="@android:color/white" />
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
-                            android:layout_height="100dp"
-                            app:cardBackgroundColor="#176B87"
-                            app:cardCornerRadius="8dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Nội dung tin tức 3..."
-                                android:textColor="@android:color/white" />
-                        </com.google.android.material.card.MaterialCardView>
-                    </LinearLayout>
-                </HorizontalScrollView>
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_featured_event" />
             </LinearLayout>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,4 +1,4 @@
-package com.example.myapplication; // 🔹 Đảm bảo đúng package
+package com.example.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,113 +12,203 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import java.text.SimpleDateFormat;
+import com.example.myapplication.Models.SeatCountResponse;
+import com.example.myapplication.Network.ApiClient;
+import com.example.myapplication.Network.ApiService;
+import com.example.myapplication.Network.ApiResponse;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class SelectSeatActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     TextView tvCinemaName, tvShowTime, tvMovieName, tvSelectedSeat, tvTotalPrice;
-    TableLayout tableSeats;
     Button btnContinue;
     AutoCompleteTextView actvArea;
     ImageView ivAreaMap;
+
+    private String eventId;
+    private String eventDateTime;
+    private String eventLocation;
+    private String eventName;
+    private ApiService apiService;
+
+    // Danh sách chi tiết ghế để quản lý logic
+    private List<SeatTypeDetail> seatDetailsList = new ArrayList<>();
+
+    private String selectedSeatTypeId;
+    private double selectedSeatPrice = 0.0;
+    private int quantity = 1; // 💡 Mặc định 1 vé
+
+    // Lớp nội bộ để hiển thị lên Dropdown đẹp hơn
+    private static class SeatTypeDetail {
+        String id;
+        String name;
+        double price;
+        int available;
+
+        public SeatTypeDetail(String id, String name, double price, int available) {
+            this.id = id;
+            this.name = name;
+            this.price = price;
+            this.available = available;
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            DecimalFormat formatter = new DecimalFormat("#,###");
+            // Vd: VIP - 200.000đ (Còn: 50)
+            return name + " - " + formatter.format(price) + "đ (Còn: " + available + ")";
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_seats);
 
-        // --- 1. BẮT ĐẦU KÍCH HOẠT TOOLBAR ---
+        apiService = ApiClient.getApiService();
+
+        // --- Ánh xạ Views ---
         toolbar = findViewById(R.id.select_seat_toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-        }
+        if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        // --- 2. Ánh xạ các View ---
         tvCinemaName = findViewById(R.id.tvCinemaName);
         tvShowTime = findViewById(R.id.tvShowTime);
         tvMovieName = findViewById(R.id.tvMovieName);
         btnContinue = findViewById(R.id.btnContinue);
         tvSelectedSeat = findViewById(R.id.tvSelectedSeat);
         tvTotalPrice = findViewById(R.id.tvTotalPrice);
-        // Ánh xạ các view mới
         actvArea = findViewById(R.id.actvArea);
         ivAreaMap = findViewById(R.id.ivAreaMap);
 
-        // --- 3. Lấy dữ liệu từ Intent ---
-        String locationAddress = getIntent().getStringExtra("LOCATION_ADDRESS");
-        long selectedTimeMs = getIntent().getLongExtra("SELECTED_TIME_MS", 0);
+        // --- Nhận dữ liệu ---
+        Intent intent = getIntent();
+        eventId = intent.getStringExtra("EVENT_ID");
+        eventDateTime = intent.getStringExtra("EVENT_DATETIME");
+        eventLocation = intent.getStringExtra("EVENT_LOCATION");
+        eventName = intent.getStringExtra("EVENT_NAME");
 
-        // Định dạng lại thời gian
-        Date selectedTime = new Date(selectedTimeMs);
-        SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm", Locale.getDefault());
-        String timeString = timeFormatter.format(selectedTime);
+        // --- Hiển thị thông tin ---
+        if (eventLocation != null) tvCinemaName.setText(eventLocation);
+        if (eventDateTime != null) tvShowTime.setText(eventDateTime);
+        if (eventName != null) tvMovieName.setText(eventName);
 
-        // --- 4. Hiển thị dữ liệu lên TextView ---
-        if (locationAddress != null) {
-            tvCinemaName.setText(locationAddress);
-        }
-        tvShowTime.setText(timeString);
-
-        // --- 5. CẤU HÌNH DROPDOWN CHỌN KHU VỰC ---
-        // Giả lập dữ liệu các khu vực (Bạn nên lấy list này từ API hoặc Intent nếu có)
-        List<String> areaList = new ArrayList<>();
-        areaList.add("Khu A - Phổ thông");
-        areaList.add("Khu B - VIP (Giữa rạp)");
-        areaList.add("Khu C - Cặp đôi (Cuối rạp)");
-
-        // Tạo Adapter để kết nối dữ liệu với Dropdown
-        // android.R.layout.simple_dropdown_item_1line là layout mặc định của Android cho 1 dòng text
-        ArrayAdapter<String> areaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, areaList);
-
-        // Gán Adapter cho AutoCompleteTextView
-        actvArea.setAdapter(areaAdapter);
-
-        // (Tùy chọn) Đặt giá trị mặc định ban đầu là phần tử đầu tiên
-        if (!areaList.isEmpty()) {
-            actvArea.setText(areaList.get(0), false); // false để không hiện dropdown ngay lúc set text
+        // --- Tải ghế ---
+        if (eventId != null) {
+            loadSeatTypes(eventId);
+        } else {
+            Toast.makeText(this, "Lỗi: Không tìm thấy ID sự kiện", Toast.LENGTH_SHORT).show();
         }
 
-        // Xử lý sự kiện khi người dùng chọn một khu vực
-        actvArea.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedArea = (String) parent.getItemAtPosition(position);
-                // TODO: Xử lý logic khi chọn khu vực ở đây.
-                // Ví dụ: Tải lại sơ đồ ghế (loadSeatsForArea(selectedArea)), cập nhật giá tiền, thay đổi bản đồ...
-                Toast.makeText(SelectSeatActivity.this, "Đã chọn: " + selectedArea, Toast.LENGTH_SHORT).show();
+        // --- Xử lý nút Tiếp tục ---
+        btnContinue.setOnClickListener(v -> {
+            double finalTotalPrice = selectedSeatPrice * quantity;
 
-                // Ví dụ đổi ảnh bản đồ tùy theo khu vực (nếu bạn có ảnh khác nhau)
-                // if (position == 0) ivAreaMap.setImageResource(R.drawable.map_area_a);
-                // else if (position == 1) ivAreaMap.setImageResource(R.drawable.map_area_b);
+            if (eventId == null || selectedSeatTypeId == null) {
+                Toast.makeText(SelectSeatActivity.this, "Vui lòng chờ tải dữ liệu hoặc chọn loại vé.", Toast.LENGTH_SHORT).show();
+                return;
             }
-        });
 
-        btnContinue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SelectSeatActivity.this, Checkout.class);
-                startActivity(intent);
-                finish();
-            }
-        });
+            Intent checkoutIntent = new Intent(SelectSeatActivity.this, Checkout.class);
+            checkoutIntent.putExtra("EVENT_ID", eventId);
+            checkoutIntent.putExtra("EVENT_NAME", eventName);
+            checkoutIntent.putExtra("SEAT_TYPE_ID", selectedSeatTypeId);
+            checkoutIntent.putExtra("QUANTITY", quantity);
+            checkoutIntent.putExtra("TOTAL_PRICE", finalTotalPrice);
 
-        // (Đây là nơi bạn sẽ tiếp tục code để vẽ các ghế vào tableSeats)
-        // loadSeatsForArea(actvArea.getText().toString()); // Ví dụ gọi hàm load ghế ban đầu
+            startActivity(checkoutIntent);
+        });
     }
 
-    // --- 6. Xử lý nút Back trên Toolbar ---
+    private void loadSeatTypes(String eventId) {
+        apiService.getEventSeats(eventId).enqueue(new Callback<ApiResponse<SeatCountResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<SeatCountResponse>> call, Response<ApiResponse<SeatCountResponse>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    SeatCountResponse data = response.body().getData();
+
+                    // 💡 Kiểm tra null và danh sách rỗng
+                    if (data != null && data.seatList != null && !data.seatList.isEmpty()) {
+                        seatDetailsList.clear();
+
+                        for (SeatCountResponse.SeatType seat : data.seatList) {
+                            seatDetailsList.add(new SeatTypeDetail(
+                                    seat.seatTypeId,
+                                    seat.seatName,
+                                    seat.price,
+                                    seat.availableSeats
+                            ));
+                        }
+                        setupDropdown();
+                    } else {
+                        Toast.makeText(SelectSeatActivity.this, "Sự kiện này chưa mở bán vé.", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Log.e("SEAT_LOAD", "Lỗi tải ghế: " + response.code());
+                    Toast.makeText(SelectSeatActivity.this, "Không tải được danh sách ghế.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<SeatCountResponse>> call, Throwable t) {
+                Log.e("SEAT_LOAD", "Lỗi kết nối: " + t.getMessage());
+                Toast.makeText(SelectSeatActivity.this, "Lỗi kết nối mạng.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setupDropdown() {
+        List<String> areaNames = new ArrayList<>();
+        for (SeatTypeDetail detail : seatDetailsList) {
+            areaNames.add(detail.toString());
+        }
+
+        ArrayAdapter<String> areaAdapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, areaNames);
+        actvArea.setAdapter(areaAdapter);
+
+        actvArea.setOnItemClickListener((parent, view, position, id) -> {
+            SeatTypeDetail selected = seatDetailsList.get(position);
+            selectedSeatTypeId = selected.id;
+            selectedSeatPrice = selected.price;
+
+            updatePriceUI();
+            tvSelectedSeat.setText("Loại vé: " + selected.name);
+        });
+
+        // 💡 Tự động chọn loại ghế đầu tiên để người dùng không bị lỗi null khi bấm tiếp tục ngay
+        if (!seatDetailsList.isEmpty()) {
+            actvArea.setText(areaNames.get(0), false);
+
+            SeatTypeDetail initial = seatDetailsList.get(0);
+            selectedSeatTypeId = initial.id;
+            selectedSeatPrice = initial.price;
+
+            updatePriceUI();
+            tvSelectedSeat.setText("Loại vé: " + initial.name);
+        }
+    }
+
+    private void updatePriceUI() {
+        double total = selectedSeatPrice * quantity;
+        DecimalFormat formatter = new DecimalFormat("#,###");
+        tvTotalPrice.setText(formatter.format(total) + "đ");
+    }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == android.R.id.home) {

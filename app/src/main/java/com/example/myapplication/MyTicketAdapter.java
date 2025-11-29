@@ -21,14 +21,15 @@ public class MyTicketAdapter extends RecyclerView.Adapter<MyTicketAdapter.MyTick
 
     private final Context context;
     private final List<MyTicket> myTicketList;
-    // Cần định nghĩa màu green và orange trong resources/values/colors.xml
     private final int COLOR_GREEN = 0xFF28A745;
     private final int COLOR_ORANGE = 0xFFFFC107;
 
-    public MyTicketAdapter(Context context, List<MyTicket> myTicketList) {
+    public MyTicketAdapter(Context context, List<MyTicket> myTicketList) { // 💡 Cấu trúc này cần Context
         this.context = context;
         this.myTicketList = myTicketList;
     }
+
+    // ... (onBindViewHolder và các phần khác giữ nguyên)
 
     @NonNull
     @Override
@@ -69,10 +70,6 @@ public class MyTicketAdapter extends RecyclerView.Adapter<MyTicketAdapter.MyTick
         holder.btnScanTicket.setOnClickListener(v -> {
             // Logic MỞ CAMERA VÀ QUÉT QR
             Toast.makeText(context, "Mở Camera để quét mã QR cho vé: " + ticket.getTicketCode(), Toast.LENGTH_SHORT).show();
-
-            // Ví dụ giả lập điểm danh thành công sau khi bấm nút (để test UI)
-            // ticket.setScanned(true);
-            // notifyItemChanged(position);
         });
     }
 

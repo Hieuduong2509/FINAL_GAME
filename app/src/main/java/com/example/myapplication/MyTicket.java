@@ -1,14 +1,25 @@
 package com.example.myapplication;
 
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 // Model cho các vé đã mua/thanh toán của người dùng
 public class MyTicket implements Serializable {
+
+    @SerializedName("eventName")
     private String eventName;
+
+    @SerializedName("ticketCode")
     private String ticketCode;
+
+    @SerializedName("quantity")
     private int quantity;
+
+    @SerializedName("imageUrl")
     private String imageUrl;
-    private boolean isScanned; // Trạng thái: true nếu đã điểm danh/sử dụng
+
+    @SerializedName("isScanned")
+    private boolean isScanned;
 
     public MyTicket(String eventName, String ticketCode, int quantity, String imageUrl, boolean isScanned) {
         this.eventName = eventName;

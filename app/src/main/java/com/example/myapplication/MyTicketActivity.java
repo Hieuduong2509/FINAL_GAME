@@ -1,69 +1,94 @@
 package com.example.myapplication;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.MenuItem;
-import androidx.annotation.NonNull;
+import android.util.Log;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.appbar.MaterialToolbar;
 
-import java.util.ArrayList;
+import com.example.myapplication.Models.User;
+import com.example.myapplication.Network.ApiClient;
+import com.example.myapplication.Network.ApiService;
+import com.example.myapplication.Network.ApiResponse;
+
 import java.util.List;
 
-// Activity này hiển thị danh sách vé đã mua của người dùng
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MyTicketActivity extends AppCompatActivity {
 
-    private MaterialToolbar toolbar;
     private RecyclerView recyclerView;
     private MyTicketAdapter adapter;
-    private List<MyTicket> myTicketList; // Sử dụng Model Vé Đã Mua
+    private ApiService apiService;
+    private String currentUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_ticket);
 
-        toolbar = findViewById(R.id.toolbarMyTickets);
+        apiService = ApiClient.getApiService();
+
+        // Ánh xạ RecyclerView (dùng ID chính xác từ XML)
         recyclerView = findViewById(R.id.recyclerMyTickets);
 
-        // 1. Thiết lập Toolbar
+        // Thiết lập Toolbar
+        Toolbar toolbar = findViewById(R.id.toolbarMyTickets);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+        toolbar.setNavigationOnClickListener(v -> finish());
 
-        // 2. Tải dữ liệu giả lập (thay bằng API call sau này)
-        loadMyTicketData();
+        // Lấy User ID
+        SharedPreferences prefs = getSharedPreferences(Login.MY_PREFS, Context.MODE_PRIVATE);
+        currentUserId = prefs.getString("USER_ID", null);
 
-        // 3. Thiết lập RecyclerView
-        adapter = new MyTicketAdapter(this, myTicketList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-    }
 
-    // Xử lý nút back
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
+        if (currentUserId != null) {
+            loadMyTickets(currentUserId);
+        } else {
+            Toast.makeText(this, "Vui lòng đăng nhập để xem vé.", Toast.LENGTH_LONG).show();
         }
-        return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Hàm giả lập load danh sách vé đã mua của người dùng
-     */
-    private void loadMyTicketData() {
-        myTicketList = new ArrayList<>();
-        // Giả lập dữ liệu vé đã mua và đã thanh toán
-        myTicketList.add(new MyTicket("Hòa Nhạc Giao Hưởng", "SYM12345", 2,
-                "https://placehold.co/100x100/176B87/FFFFFF?text=SYM", false)); // Chưa điểm danh
-        myTicketList.add(new MyTicket("Vũ Hội Hóa Trang", "VHM98765", 1,
-                "https://placehold.co/100x100/64CCC5/000000?text=VHH", false)); // Chưa điểm danh
-        myTicketList.add(new MyTicket("Triển Lãm Công Nghệ", "TLT67890", 3,
-                "https://placehold.co/100x100/DAFFFB/000000?text=TLT", true)); // Đã điểm danh
+    private void loadMyTickets(String userId) {
+        // Gọi API GET /api/tickets/user/{userId}
+        apiService.getUserTickets(userId).enqueue(new Callback<ApiResponse<List<MyTicket>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<MyTicket>>> call, Response<ApiResponse<List<MyTicket>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    List<MyTicket> tickets = response.body().getData();
+
+                    if (tickets != null && !tickets.isEmpty()) {
+                        // 💡 ĐÃ SỬA: Thêm Context (MyTicketActivity.this) vào hàm tạo
+                        adapter = new MyTicketAdapter(MyTicketActivity.this, tickets);
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        Toast.makeText(MyTicketActivity.this, "Bạn chưa có vé nào.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    String message = response.body() != null ? response.body().getMessage() : "Lỗi tải vé.";
+                    Log.e("MYTICKET_API", "Load failed: " + response.code() + ", Msg: " + message);
+                    Toast.makeText(MyTicketActivity.this, "Không thể tải vé: " + message, Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<List<MyTicket>>> call, Throwable t) {
+                Log.e("MYTICKET_API", "Connection Failure", t);
+                Toast.makeText(MyTicketActivity.this, "Lỗi kết nối.", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
