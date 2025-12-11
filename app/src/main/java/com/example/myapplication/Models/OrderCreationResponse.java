@@ -13,7 +13,7 @@ public class OrderCreationResponse implements Serializable {
     }
 
     private static class OrderInfo {
-        @SerializedName("orderId") // Backend trả về camelCase "orderId" trong model Order
+        @SerializedName("orderId")
         String orderId;
     }
 }

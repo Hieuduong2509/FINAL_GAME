@@ -15,7 +15,7 @@
         android:background="#176B87"
         app:navigationIcon="@android:drawable/ic_menu_revert"
         app:navigationIconTint="@android:color/white"
-        app:title="Vé Của Tôi"
+        app:title="MY TICKET"
         app:titleTextColor="@android:color/white" />
 
     <androidx.recyclerview.widget.RecyclerView

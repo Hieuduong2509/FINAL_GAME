@@ -6,7 +6,6 @@ import java.util.List;
 
 public class SeatCountResponse implements Serializable {
 
-    // Backend trả về object: { data: [danh_sách], totalAvailableSeats: ... }
     @SerializedName("data")
     public List<SeatType> seatList;
 
@@ -14,18 +13,18 @@ public class SeatCountResponse implements Serializable {
     public int totalAvailableSeats;
 
     public static class SeatType implements Serializable {
-        // 💡 SỬA: Dùng camelCase để khớp với Node.js Model (EventSeatType)
 
-        @SerializedName("seatTypeId") // Backend: this.seatTypeId
+
+        @SerializedName("seatTypeId")
         public String seatTypeId;
 
-        @SerializedName("seatName")   // Backend: this.seatName
+        @SerializedName("seatName")
         public String seatName;
 
-        @SerializedName("price")      // Backend: this.price
+        @SerializedName("price")
         public double price;
 
-        @SerializedName("availableSeats") // Backend: this.availableSeats
+        @SerializedName("availableSeats")
         public int availableSeats;
     }
 }

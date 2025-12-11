@@ -7,30 +7,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-// Chỉ cần BottomNavigationView
+// 👇 CÁC IMPORT MỚI CẦN THÊM
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import java.util.concurrent.TimeUnit;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-// Không cần FloatingActionButton nữa
-// import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class HomeActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
-    // private FloatingActionButton fabQrScan; // 🔹 XOÁ BIẾN NÀY
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.home_page); // Load layout home_page
+        setContentView(R.layout.home_page);
 
-        // Ánh xạ ID
+        // 1. Kích hoạt chạy ngầm ngay khi mở App
+        startBackgroundJob();
+
         bottomNavigationView = findViewById(R.id.bottom_navigation_view);
-        // fabQrScan = findViewById(R.id.nav_order); // 🔹 XOÁ DÒNG NÀY (Dòng này sai)
 
-        // 🔹 XOÁ CÁC DÒNG NÀY
-        // fabQrScan.bringToFront();
-        // setupFab();
-
-        // 🔹 SỬA LẠI TOÀN BỘ LISTENER
+        // Setup Bottom Navigation
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
             int id = item.getItemId();
@@ -39,41 +38,40 @@ public class HomeActivity extends AppCompatActivity {
                 selectedFragment = new MainFragment();
             } else if (id == R.id.nav_voucher) {
                 selectedFragment = new VoucherFragment();
-                Toast.makeText(this, "Tính năng ưu đãi đang phát triển", Toast.LENGTH_SHORT).show();
-            } else if (id == R.id.nav_ticket) { // 🔹 THÊM CASE MỚI
-                selectedFragment = new TicketFragment(); // (Bạn cần tạo Fragment này)
-                Toast.makeText(this, "Đặt Vé", Toast.LENGTH_SHORT).show();
-            } else if (id == R.id.nav_order) { // 🔹 THÊM CASE MỚI
-                selectedFragment = new OrderFragment(); // (Bạn cần tạo Fragment này)
-                Toast.makeText(this, "Giỏ Hàng", Toast.LENGTH_SHORT).show();
+            } else if (id == R.id.nav_ticket) {
+                selectedFragment = new TicketFragment();
+            } else if (id == R.id.nav_artist) {
+                selectedFragment = new ArtistFragment();
             } else if (id == R.id.nav_profile) {
                 selectedFragment = new ProfileFragment();
             }
 
             if (selectedFragment != null) {
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, selectedFragment) // 🔹 Sửa lỗi typo
+                        .replace(R.id.fragment_container, selectedFragment)
                         .commit();
             }
             return true;
         });
 
-        // Tải Fragment mặc định (giữ nguyên)
         if (savedInstanceState == null) {
             bottomNavigationView.setSelectedItemId(R.id.nav_home);
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new MainFragment()) // 🔹 Sửa lỗi typo
+                    .replace(R.id.fragment_container, new MainFragment())
                     .commit();
         }
     }
+    private void startBackgroundJob() {
+        PeriodicWorkRequest checkEventRequest = new PeriodicWorkRequest.Builder(
+                EventWorker.class,
+                15,
+                TimeUnit.MINUTES)
+                .build();
 
-    // 🔹 XOÁ TOÀN BỘ HÀM NÀY
-    /*
-    private void setupFab() {
-        // Giữ nguyên
-        fabQrScan.setOnClickListener(v ->
-                Toast.makeText(HomeActivity.this, "Mở chức năng quét QR...", Toast.LENGTH_SHORT).show()
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "CHECK_NEW_EVENTS_WORK",
+                ExistingPeriodicWorkPolicy.KEEP,
+                checkEventRequest
         );
     }
-    */
 }

@@ -44,15 +44,11 @@ public class SelectSeatActivity extends AppCompatActivity {
     private String eventLocation;
     private String eventName;
     private ApiService apiService;
-
-    // Danh sách chi tiết ghế để quản lý logic
     private List<SeatTypeDetail> seatDetailsList = new ArrayList<>();
 
     private String selectedSeatTypeId;
     private double selectedSeatPrice = 0.0;
-    private int quantity = 1; // 💡 Mặc định 1 vé
-
-    // Lớp nội bộ để hiển thị lên Dropdown đẹp hơn
+    private int quantity = 1;
     private static class SeatTypeDetail {
         String id;
         String name;
@@ -70,8 +66,7 @@ public class SelectSeatActivity extends AppCompatActivity {
         @Override
         public String toString() {
             DecimalFormat formatter = new DecimalFormat("#,###");
-            // Vd: VIP - 200.000đ (Còn: 50)
-            return name + " - " + formatter.format(price) + "đ (Còn: " + available + ")";
+            return name + " - " + formatter.format(price) + "đ (Available: " + available + ")";
         }
     }
 
@@ -81,8 +76,6 @@ public class SelectSeatActivity extends AppCompatActivity {
         setContentView(R.layout.select_seats);
 
         apiService = ApiClient.getApiService();
-
-        // --- Ánh xạ Views ---
         toolbar = findViewById(R.id.select_seat_toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -95,32 +88,24 @@ public class SelectSeatActivity extends AppCompatActivity {
         tvTotalPrice = findViewById(R.id.tvTotalPrice);
         actvArea = findViewById(R.id.actvArea);
         ivAreaMap = findViewById(R.id.ivAreaMap);
-
-        // --- Nhận dữ liệu ---
         Intent intent = getIntent();
         eventId = intent.getStringExtra("EVENT_ID");
         eventDateTime = intent.getStringExtra("EVENT_DATETIME");
         eventLocation = intent.getStringExtra("EVENT_LOCATION");
         eventName = intent.getStringExtra("EVENT_NAME");
-
-        // --- Hiển thị thông tin ---
         if (eventLocation != null) tvCinemaName.setText(eventLocation);
         if (eventDateTime != null) tvShowTime.setText(eventDateTime);
         if (eventName != null) tvMovieName.setText(eventName);
-
-        // --- Tải ghế ---
         if (eventId != null) {
             loadSeatTypes(eventId);
         } else {
             Toast.makeText(this, "Lỗi: Không tìm thấy ID sự kiện", Toast.LENGTH_SHORT).show();
         }
-
-        // --- Xử lý nút Tiếp tục ---
         btnContinue.setOnClickListener(v -> {
             double finalTotalPrice = selectedSeatPrice * quantity;
 
             if (eventId == null || selectedSeatTypeId == null) {
-                Toast.makeText(SelectSeatActivity.this, "Vui lòng chờ tải dữ liệu hoặc chọn loại vé.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(SelectSeatActivity.this, "Please wait for data to load or select ticket type.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -142,7 +127,7 @@ public class SelectSeatActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     SeatCountResponse data = response.body().getData();
 
-                    // 💡 Kiểm tra null và danh sách rỗng
+                    //  Kiểm tra null và danh sách rỗng
                     if (data != null && data.seatList != null && !data.seatList.isEmpty()) {
                         seatDetailsList.clear();
 
@@ -156,18 +141,18 @@ public class SelectSeatActivity extends AppCompatActivity {
                         }
                         setupDropdown();
                     } else {
-                        Toast.makeText(SelectSeatActivity.this, "Sự kiện này chưa mở bán vé.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SelectSeatActivity.this, "Tickets for this event are not yet available.", Toast.LENGTH_LONG).show();
                     }
                 } else {
                     Log.e("SEAT_LOAD", "Lỗi tải ghế: " + response.code());
-                    Toast.makeText(SelectSeatActivity.this, "Không tải được danh sách ghế.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SelectSeatActivity.this, "Unable to load seat list.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<SeatCountResponse>> call, Throwable t) {
-                Log.e("SEAT_LOAD", "Lỗi kết nối: " + t.getMessage());
-                Toast.makeText(SelectSeatActivity.this, "Lỗi kết nối mạng.", Toast.LENGTH_SHORT).show();
+                Log.e("SEAT_LOAD", "Not to Connected: " + t.getMessage());
+                Toast.makeText(SelectSeatActivity.this, "Not to Connected", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -187,10 +172,8 @@ public class SelectSeatActivity extends AppCompatActivity {
             selectedSeatPrice = selected.price;
 
             updatePriceUI();
-            tvSelectedSeat.setText("Loại vé: " + selected.name);
+            tvSelectedSeat.setText("Type: " + selected.name);
         });
-
-        // 💡 Tự động chọn loại ghế đầu tiên để người dùng không bị lỗi null khi bấm tiếp tục ngay
         if (!seatDetailsList.isEmpty()) {
             actvArea.setText(areaNames.get(0), false);
 
@@ -199,7 +182,7 @@ public class SelectSeatActivity extends AppCompatActivity {
             selectedSeatPrice = initial.price;
 
             updatePriceUI();
-            tvSelectedSeat.setText("Loại vé: " + initial.name);
+            tvSelectedSeat.setText("Type: " + initial.name);
         }
     }
 

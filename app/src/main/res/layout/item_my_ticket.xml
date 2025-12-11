@@ -47,7 +47,7 @@
                 android:id="@+id/tvEventName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Tên Sự Kiện Đã Thanh Toán"
+                tools:text="NAME EVENT"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:maxLines="2"
@@ -58,7 +58,7 @@
                 android:id="@+id/tvTicketCode"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Mã vé: #AD2025"
+                tools:text="CODE TICKET: #AD2025"
                 android:textColor="#333333"
                 android:layout_marginTop="4dp"
                 android:textSize="14sp"/>
@@ -67,15 +67,24 @@
                 android:id="@+id/tvTicketStatusText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Đã thanh toán (Chưa điểm danh)"
+                tools:text="READY"
                 android:textColor="#28A745"
                 android:textStyle="bold"
                 android:layout_marginTop="4dp"
                 android:textSize="12sp"/>
-
         </LinearLayout>
 
-        <!-- Nút Scan QR -->
+        <ImageButton
+            android:id="@+id/btnShare"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_share"
+            app:tint="#FF9800"
+            android:padding="8dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="Share Ticket"/>
+
         <ImageButton
             android:id="@+id/btnScanTicket"
             android:layout_width="48dp"
@@ -85,6 +94,18 @@
             android:src="@android:drawable/ic_menu_camera"
             app:tint="#176B87"
             android:padding="8dp"/>
+
+        <Button
+            android:id="@+id/btnReview"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Review"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:backgroundTint="#FFC107"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="20dp"
+            android:layout_marginStart="8dp"/>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

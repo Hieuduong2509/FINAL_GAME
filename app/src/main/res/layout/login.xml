@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="80sp"
         android:gravity="center"
-        android:text="Đăng Nhập"
+        android:text="LOGIN"
         android:textSize="34sp"
         android:textStyle="bold" />
 
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:ems="10"
-        android:hint="Tên Đăng Nhập"
+        android:hint="EMAIL"
         android:inputType="text"
         android:minHeight="48dp" />
 
@@ -50,7 +50,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Lưu Đăng Nhập" />
+            android:text="REMEMBER" />
 
         <Button
             android:id="@+id/forgot"
@@ -60,7 +60,7 @@
             android:backgroundTint="#FFFFFF"
             android:minHeight="48dp"
             android:padding="10dp"
-            android:text="Quên Mật Khẩu"
+            android:text="FORGOT PASSWORD"
             android:textColor="#2196F3"
             android:textSize="14sp" />
 
@@ -74,7 +74,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:text="Đăng Nhập"
+        android:text="LOGIN"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:textSize="16sp"

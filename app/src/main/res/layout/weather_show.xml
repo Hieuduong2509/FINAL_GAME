@@ -58,7 +58,7 @@
                     android:id="@+id/weather_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Đang tải..."
+                    android:text="LOADING..."
                     android:textColor="@android:color/white"
                     android:textSize="22sp" />
 
@@ -105,7 +105,7 @@
                 android:id="@+id/daily_forecast_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Dự báo 5 ngày"
+                android:text="FORCAST 5 DAYS"
                 android:textColor="#C0C0C0"
                 android:textSize="24sp"
                 android:textStyle="bold"

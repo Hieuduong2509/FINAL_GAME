@@ -13,10 +13,37 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="#176B87"
-        app:navigationIcon="@android:drawable/ic_menu_revert"
+        app:navigationIcon="@drawable/outline_arrow_back_24"
         app:navigationIconTint="@android:color/white"
-        app:title="Tất Cả Nghệ Sĩ"
+        app:title="ARTISTS"
         app:titleTextColor="@android:color/white" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_margin="12dp"
+        android:background="@drawable/bg_search_rounded"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp">
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/search_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+            app:tint="#757575" />
+
+        <EditText
+            android:id="@+id/et_search_artist"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:hint="SEARCH ARTIST.."
+            android:inputType="text"
+            android:maxLines="1"
+            android:paddingStart="8dp"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerArtistList"

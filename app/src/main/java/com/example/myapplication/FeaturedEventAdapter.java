@@ -23,7 +23,6 @@ public class FeaturedEventAdapter extends RecyclerView.Adapter<FeaturedEventAdap
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Sử dụng layout mới tạo cho item sự kiện nổi bật
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_featured_event, parent, false);
         return new ViewHolder(view);
@@ -36,8 +35,6 @@ public class FeaturedEventAdapter extends RecyclerView.Adapter<FeaturedEventAdap
         holder.tvName.setText(event.eventName);
         holder.tvTime.setText(event.getDateTime());
         holder.tvLocation.setText(event.location);
-
-        // Xử lý Click (mở trang chi tiết vé)
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, TicketDetailActivity.class);
             intent.putExtra("EVENT_ID", event.getEventId());
@@ -45,22 +42,17 @@ public class FeaturedEventAdapter extends RecyclerView.Adapter<FeaturedEventAdap
             context.startActivity(intent);
         });
     }
-
     @Override
     public int getItemCount() {
-        // Chỉ hiển thị tối đa 3 sự kiện
         return Math.min(eventList.size(), 3);
     }
-
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvTime, tvLocation;
-
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tv_feat_name);
             tvTime = itemView.findViewById(R.id.tv_feat_time);
             tvLocation = itemView.findViewById(R.id.tv_feat_location);
-            // Các TextView được ánh xạ từ item_featured_event.xml
         }
     }
 }

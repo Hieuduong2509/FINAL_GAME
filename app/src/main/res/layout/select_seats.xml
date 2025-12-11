@@ -20,7 +20,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="#176B87"
             app:navigationIcon="@android:drawable/ic_menu_revert"
-            app:title="Chọn Ghế"
+            app:title="CHOOSE SEAT"
             app:titleTextColor="@android:color/white" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -91,7 +91,7 @@
             android:layout_marginTop="20dp"
             android:background="#DAFFFB"
             android:gravity="center"
-            android:text="Sân Khấu"
+            android:text="MAP"
             android:textColor="#176B87"
             android:textStyle="bold" />
 
@@ -112,7 +112,7 @@
                     android:id="@+id/ivAreaMap"
                     android:layout_width="match_parent"
                     android:layout_height="350dp"
-                    android:contentDescription="Bản đồ tổng quan khu vực"
+                    android:contentDescription="MAP AREA"
                     android:scaleType="centerCrop"
                     android:background="#F0F0F0"
                     tools:srcCompat="@tools:sample/backgrounds/scenic" />
@@ -123,7 +123,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:hint="Chọn khu vực của bạn">
+                    android:hint="CHOOSE SEAT">
 
                     <AutoCompleteTextView
                         android:id="@+id/actvArea"
@@ -180,7 +180,7 @@
                 android:id="@+id/btnContinue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tiếp tục"
+                android:text="NEXT"
                 android:paddingHorizontal="32dp"
                 android:paddingVertical="12dp"
                 android:textColor="@android:color/white"

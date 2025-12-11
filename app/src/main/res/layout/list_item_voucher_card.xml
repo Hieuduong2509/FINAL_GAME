@@ -2,76 +2,85 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="160dp"
-    android:layout_height="wrap_content"
-    android:layout_marginEnd="12dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
-    app:cardBackgroundColor="@android:color/white"> <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="12dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_partner_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:paddingLeft="20dp"
-            android:text="Tên đối tác"
-            android:textSize="14sp"
-            android:textColor="#64CCC5"/>
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginHorizontal="12dp"
-        android:background="@drawable/dashed_line"
-        android:layerType="software" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp">
-
-        <TextView
-            android:id="@+id/tv_discount_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="15dp"
-            android:text="Ưu đãi 15%"
-            android:textColor="#176B87"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/tv_discount_subtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Tối đa 30K cho đơn..."
-            android:paddingLeft="1dp"
-            android:layout_marginTop="4dp"/>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_collect"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Thu thập"
-            android:textSize="12sp"
-            app:backgroundTint="#176B87"
-            android:textColor="@android:color/white"
-            app:cornerRadius="8dp"
-            android:layout_marginTop="12dp"/>
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:background="#E0F7FA"
+            android:padding="12dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/confirmation_number_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+                app:tint="#00BCD4"/>
+
+            <TextView
+                android:id="@+id/tv_voucher_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="CODE123"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#006064"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginHorizontal="12dp"
+            android:background="@drawable/dashed_line"
+            android:layerType="software" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tv_voucher_discount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GIẢM 20%"
+                android:textColor="#E91E63"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_voucher_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="HẠN: 30/12/2024"
+                android:textSize="14sp"
+                android:textColor="#757575"/>
+
+            <Button
+                android:id="@+id/btn_voucher_action"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="ĐỔI 1000 XU"
+                android:textColor="@android:color/white"
+                android:backgroundTint="#FF9800"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
 </com.google.android.material.card.MaterialCardView>

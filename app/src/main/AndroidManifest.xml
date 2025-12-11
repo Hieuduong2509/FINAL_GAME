@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:allowBackup="true"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -12,6 +19,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
+
+        <meta-data
+            android:name="osmdroid.basePath"
+            android:value="osmdroid" />
+        <meta-data
+            android:name="osmdroid.cachePath"
+            android:value="osmdroid/cache" />
 
         <activity
             android:name=".Login"
@@ -24,8 +38,7 @@
 
         <activity android:name=".HomeActivity" />
         <activity android:name=".signUp" />
-        <activity android:name=".BuyTicketActivity"
-            tools:targetApi="26" />
+        <activity android:name=".BuyTicketActivity" tools:targetApi="26" />
         <activity android:name=".EditProfile" />
         <activity android:name=".SelectSeatActivity" />
         <activity android:name=".Weather" />
@@ -34,10 +47,10 @@
         <activity android:name=".ArtistListActivity" />
         <activity android:name=".ArtistDetailActivity" />
         <activity android:name=".MyTicketActivity" />
+        <activity android:name=".ForgotPasswordActivity" />
+        <activity android:name=".NotificationActivity" />
+
+        <activity android:name=".LocationActivity" />
 
     </application>
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

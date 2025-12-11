@@ -10,7 +10,7 @@ public class AuthResponse {
     private String refreshToken;
 
     @SerializedName("user")
-    private User user; // Sử dụng Model User đã tạo
+    private User user;
 
     public String getAccessToken() { return accessToken; }
     public String getRefreshToken() { return refreshToken; }

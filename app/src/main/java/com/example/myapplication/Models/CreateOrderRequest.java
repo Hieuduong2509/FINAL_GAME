@@ -13,10 +13,12 @@ public class CreateOrderRequest implements Serializable {
 
     @SerializedName("items")
     private List<OrderItemRequest> items;
-
-    public CreateOrderRequest(String userId, String eventId, List<OrderItemRequest> items) {
+    private String voucherCode;
+    public CreateOrderRequest(String userId, String eventId, List<OrderItemRequest> items, String voucherCode) {
         this.userId = userId;
         this.eventId = eventId;
         this.items = items;
+        this.voucherCode = voucherCode;
+
     }
 }

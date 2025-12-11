@@ -1,12 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#F5F5F5">
+    android:background="#F5F5F5"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/bg_search_rounded"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="12dp"
+        android:layout_marginBottom="12dp">
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/search_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+            android:contentDescription="Search Icon" />
+
+        <EditText
+            android:id="@+id/et_search_ticket"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:hint="Tìm kiếm sự kiện..."
+            android:paddingStart="8dp"
+            android:textSize="16sp"
+            android:inputType="text"
+            android:maxLines="1"/>
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerTickets"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
 </LinearLayout>

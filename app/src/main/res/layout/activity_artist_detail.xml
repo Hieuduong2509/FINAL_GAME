@@ -21,7 +21,7 @@
             android:background="#176B87"
             app:navigationIcon="@android:drawable/ic_menu_revert"
             app:navigationIconTint="@android:color/white"
-            app:title="Chi Tiết Nghệ Sĩ"
+            app:title="DETAIL ARTIST"
             app:titleTextColor="@android:color/white" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -35,7 +35,6 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- PHẦN 1: THÔNG TIN TỔNG QUAN NGHỆ SĨ -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -92,7 +91,7 @@
                         android:id="@+id/btn_follow_artist"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Theo dõi"
+                        android:text="FOLLOW"
                         android:layout_marginTop="16dp"
                         app:backgroundTint="#64CCC5"
                         app:cornerRadius="8dp"/>
@@ -100,11 +99,10 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- PHẦN 2: DANH SÁCH SỰ KIỆN SẮP TỚI -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sự Kiện Sắp Tới"
+                android:text="FUTURED EVENTS"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="#176B87"
@@ -112,7 +110,6 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginBottom="8dp"/>
 
-            <!-- RecyclerView này sẽ dùng lại item_ticket.xml mà bạn đã có -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerArtistEvents"
                 android:layout_width="match_parent"

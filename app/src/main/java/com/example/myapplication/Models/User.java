@@ -15,7 +15,7 @@ public class User implements Serializable {
     private String email;
 
     @SerializedName("role")
-    private String role; // Vd: 'user', 'organizer'
+    private String role;
 
     @SerializedName("phone")
     private String phone;
@@ -24,14 +24,13 @@ public class User implements Serializable {
     private int follow;
 
     @SerializedName("image")
-    private String image; // URL ảnh đại diện
-
-    // Thêm các trường khác nếu cần (ví dụ: passwordHash, createdAt,...)
-
-    // Constructor (Chủ yếu dùng cho Gson khi nhận data)
+    private String image;
+    @SerializedName("balance")
+    private long balance;
+    @SerializedName("coins")
+    private int coins;
     public User() {}
 
-    // Constructor cho các request (Register/Update)
     public User(String fullName, String email, String phone, String image) {
         this.fullName = fullName;
         this.email = email;
@@ -48,8 +47,12 @@ public class User implements Serializable {
     public int getFollow() { return follow; }
     public String getImage() { return image; }
 
-    // Setters (Chủ yếu dùng cho Update)
+    // Setters
     public void setFullName(String fullName) { this.fullName = fullName; }
     public void setPhone(String phone) { this.phone = phone; }
     public void setImage(String image) { this.image = image; }
+    public long getBalance() { return balance; }
+    public void setBalance(long balance) { this.balance = balance; }
+    public int getCoins() { return coins; }
+    public void setCoins(int coins) { this.coins = coins; }
 }

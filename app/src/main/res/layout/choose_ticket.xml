@@ -102,7 +102,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Nghệ sĩ biểu diễn"
+                    android:text="ARTISTS"
                     android:textColor="#212121"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -120,7 +120,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Mô tả sự kiện"
+                    android:text="DESCRIPTION"
                     android:textColor="#212121"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -145,7 +145,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:paddingVertical="14dp"
-        android:text="Mua Vé Ngay"
+        android:text="BUY NOW"
         android:textColor="@android:color/white"
         android:textSize="16sp"
         app:backgroundTint="#176B87"

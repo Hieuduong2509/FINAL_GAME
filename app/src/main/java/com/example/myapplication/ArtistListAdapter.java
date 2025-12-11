@@ -5,26 +5,43 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.myapplication.Models.Artist;
+import com.example.myapplication.Network.ApiClient;
 import com.google.android.material.imageview.ShapeableImageView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistListAdapter extends RecyclerView.Adapter<ArtistListAdapter.ArtistViewHolder> {
 
-    private final List<Artist> artistList;
     private final Context context;
+    private List<Artist> originalList;
+    private List<Artist> displayList;
 
     public ArtistListAdapter(Context context, List<Artist> artistList) {
         this.context = context;
-        this.artistList = artistList;
+        this.originalList = artistList;
+        this.displayList = new ArrayList<>(artistList);
+    }
+    public void filter(String query) {
+        displayList.clear();
+        if (query == null || query.isEmpty()) {
+            displayList.addAll(originalList);
+        } else {
+            String filterPattern = query.toLowerCase().trim();
+            for (Artist item : originalList) {
+                if (item.getName() != null && item.getName().toLowerCase().contains(filterPattern)) {
+                    displayList.add(item);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -36,22 +53,25 @@ public class ArtistListAdapter extends RecyclerView.Adapter<ArtistListAdapter.Ar
 
     @Override
     public void onBindViewHolder(@NonNull ArtistViewHolder holder, int position) {
-        Artist artist = artistList.get(position);
-
+        Artist artist = displayList.get(position);
         holder.tvName.setText(artist.getName());
-        holder.tvCategory.setText(artist.getCategory());
-        holder.tvEventCount.setText(artist.getUpcomingEvents().size() + " sự kiện sắp tới");
+        holder.tvCategory.setText(artist.getFollower() + " FOLLOWERS");
+        int eventCount = (artist.getUpcomingEvents() != null) ? artist.getUpcomingEvents().size() : 0;
+        holder.tvEventCount.setText(eventCount + " UPCOMING EVENTS ");
+        String imageUrl = artist.getAvatarUrl();
+        if (imageUrl != null && !imageUrl.startsWith("http")) {
+            imageUrl = ApiClient.BASE_URL + imageUrl;
+        }
 
-        // Load ảnh đại diện bằng Glide (giả lập URL)
         Glide.with(context)
-                .load(artist.getAvatarUrl().isEmpty() ? R.drawable.person_24dp_e3e3e3_fill0_wght400_grad0_opsz24 : artist.getAvatarUrl())
-                .placeholder(R.drawable.profile) // Bạn cần có một drawable icon placeholder
+                .load(imageUrl)
+                .placeholder(R.drawable.profile)
+                .error(R.drawable.profile)
                 .into(holder.ivAvatar);
 
-        // Xử lý sự kiện click chuyển sang trang chi tiết
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ArtistDetailActivity.class);
-            // Truyền đối tượng Artist (phải implement Serializable)
+            // Đảm bảo Model Artist của bạn đã implements Serializable
             intent.putExtra("ARTIST_OBJECT", artist);
             context.startActivity(intent);
         });
@@ -59,7 +79,7 @@ public class ArtistListAdapter extends RecyclerView.Adapter<ArtistListAdapter.Ar
 
     @Override
     public int getItemCount() {
-        return artistList.size();
+        return displayList.size();
     }
 
     public static class ArtistViewHolder extends RecyclerView.ViewHolder {
@@ -68,6 +88,7 @@ public class ArtistListAdapter extends RecyclerView.Adapter<ArtistListAdapter.Ar
 
         public ArtistViewHolder(@NonNull View itemView) {
             super(itemView);
+            // Ánh xạ đúng các ID trong layout item_artist_list.xml của bạn
             ivAvatar = itemView.findViewById(R.id.iv_artist_list_avatar);
             tvName = itemView.findViewById(R.id.tv_artist_list_name);
             tvCategory = itemView.findViewById(R.id.tv_artist_list_category);

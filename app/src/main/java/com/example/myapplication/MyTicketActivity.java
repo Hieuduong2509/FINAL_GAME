@@ -12,7 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.myapplication.Models.User;
+import com.example.myapplication.MyTicket;
 import com.example.myapplication.Network.ApiClient;
 import com.example.myapplication.Network.ApiService;
 import com.example.myapplication.Network.ApiResponse;
@@ -30,64 +30,68 @@ public class MyTicketActivity extends AppCompatActivity {
     private ApiService apiService;
     private String currentUserId;
 
+    public static final String SHARED_PREF_NAME = "prefShare";
+    public static final String KEY_USER_ID = "USER_ID";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_ticket);
 
         apiService = ApiClient.getApiService();
-
-        // Ánh xạ RecyclerView (dùng ID chính xác từ XML)
         recyclerView = findViewById(R.id.recyclerMyTickets);
 
-        // Thiết lập Toolbar
         Toolbar toolbar = findViewById(R.id.toolbarMyTickets);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-        toolbar.setNavigationOnClickListener(v -> finish());
+        toolbar.setNavigationOnClickListener(v -> {
+            Intent intent = new Intent(MyTicketActivity.this, HomeActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
 
-        // Lấy User ID
-        SharedPreferences prefs = getSharedPreferences(Login.MY_PREFS, Context.MODE_PRIVATE);
-        currentUserId = prefs.getString("USER_ID", null);
+        SharedPreferences prefs = getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        currentUserId = prefs.getString(KEY_USER_ID, null);
+
+        Log.d("MY_TICKET", "User ID loaded: " + currentUserId);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         if (currentUserId != null) {
             loadMyTickets(currentUserId);
         } else {
-            Toast.makeText(this, "Vui lòng đăng nhập để xem vé.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Please login first.", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(MyTicketActivity.this, Login.class);
+            startActivity(intent);
+            finish();
         }
     }
 
     private void loadMyTickets(String userId) {
-        // Gọi API GET /api/tickets/user/{userId}
         apiService.getUserTickets(userId).enqueue(new Callback<ApiResponse<List<MyTicket>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<MyTicket>>> call, Response<ApiResponse<List<MyTicket>>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
                     List<MyTicket> tickets = response.body().getData();
-
                     if (tickets != null && !tickets.isEmpty()) {
-                        // 💡 ĐÃ SỬA: Thêm Context (MyTicketActivity.this) vào hàm tạo
                         adapter = new MyTicketAdapter(MyTicketActivity.this, tickets);
                         recyclerView.setAdapter(adapter);
                     } else {
-                        Toast.makeText(MyTicketActivity.this, "Bạn chưa có vé nào.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyTicketActivity.this, "You don't have any tickets.", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    String message = response.body() != null ? response.body().getMessage() : "Lỗi tải vé.";
-                    Log.e("MYTICKET_API", "Load failed: " + response.code() + ", Msg: " + message);
-                    Toast.makeText(MyTicketActivity.this, "Không thể tải vé: " + message, Toast.LENGTH_LONG).show();
+                    Log.e("MY_TICKET", "API Error code: " + response.code());
+                    Toast.makeText(MyTicketActivity.this, "Cannot load your tickets.", Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<ApiResponse<List<MyTicket>>> call, Throwable t) {
-                Log.e("MYTICKET_API", "Connection Failure", t);
-                Toast.makeText(MyTicketActivity.this, "Lỗi kết nối.", Toast.LENGTH_LONG).show();
+                Log.e("MY_TICKET", "Network Fail: " + t.getMessage());
+                Toast.makeText(MyTicketActivity.this, "Error to connect internet.", Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -4,18 +4,16 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class TicketCreationRequest implements Serializable {
-
-    // Khớp với các tham số serviceCreateTicket cần: eventId, userId, ticketType, price, quantity
     @SerializedName("eventId")
     private String eventId;
 
     @SerializedName("userId")
     private String userId;
 
-    @SerializedName("ticketType") // Đây là SeatTypeId hoặc loại vé
+    @SerializedName("ticketType")
     private String ticketType;
 
-    @SerializedName("price") // Tổng giá trị đơn hàng
+    @SerializedName("price")
     private double price;
 
     @SerializedName("quantity")

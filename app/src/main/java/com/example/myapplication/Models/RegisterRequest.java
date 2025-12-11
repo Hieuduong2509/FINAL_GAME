@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class RegisterRequest {
     @SerializedName("fullname")
-    private String fullname; // Khớp với trường 'full_name' trong User model (nhưng service dùng fullname)
+    private String fullname;
     @SerializedName("email")
     private String email;
     @SerializedName("password")

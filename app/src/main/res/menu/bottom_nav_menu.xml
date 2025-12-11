@@ -3,26 +3,26 @@
     <item
         android:id="@+id/nav_home"
         android:icon="@drawable/person_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
-        android:title="Trang chính" />
+        android:title="HOMEPAGE" />
 
     <item
         android:id="@+id/nav_voucher"
         android:icon="@drawable/featured_seasonal_and_gifts_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
-        android:title="Ưu đãi" />
+        android:title="VOUCHER" />
 
     <item
         android:id="@+id/nav_ticket"
-        android:icon="@drawable/confirmation_number_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
-        android:title="Đặt Vé" />
+        android:icon="@drawable/artist_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+        android:title="EVENT" />
     <item
-        android:id="@+id/nav_order"
+        android:id="@+id/nav_artist"
         android:icon="@drawable/shopping_bag_speed_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
-        android:title="Giỏ Hàng" />
+        android:title="ARTIST" />
 
 
 
     <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/person_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
-        android:title="Tôi" />
+        android:title="ME" />
 </menu>

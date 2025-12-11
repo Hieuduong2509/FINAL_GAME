@@ -56,12 +56,11 @@ public class Weather extends AppCompatActivity {
         androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.weather_toolbar);
         setSupportActionBar(toolbar);
 
-        // 3. Code cũ của bạn để bật nút back (mũi tên)
+        // 3. Code cũ của bạn để bật nút back
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setTitle(null);
         }
-        // location = findViewById(R.id.location); // 🔹 Dòng này bị lặp, đã xóa
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.openweathermap.org/")
@@ -75,24 +74,18 @@ public class Weather extends AppCompatActivity {
 
         getCurrentWeather(lat, lon);
         getForecast(lat, lon);
+    }
 
-        // 🔹 LỖI Ở ĐÂY: Hàm onOptionsItemSelected đã bị di chuyển ra ngoài
-    } // ⬅️ DẤU NGOẶC KẾT THÚC CỦA `onCreate`
 
-    // 🔹 HÀM ĐƯỢC DI CHUYỂN RA ĐÂY (NẰM TRONG CLASS, BÊN NGOÀI onCreate)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        // Kiểm tra xem ID có phải là nút "home" (mũi tên quay lại) không
         if (item.getItemId() == android.R.id.home) {
-            finish(); // Đóng Activity này và quay lại Activity trước
+            finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
-
-    // ---------------- API INTERFACE ----------------
     private interface WeatherApi {
-        // ... (Giữ nguyên)
         @GET("data/2.5/weather")
         Call<CurrentWeatherResponse> getCurrentWeather(
                 @Query("lat") double lat,
@@ -112,10 +105,8 @@ public class Weather extends AppCompatActivity {
         );
     }
 
-    // ---------------- LẤY DỮ LIỆU API ----------------
 
     private void getCurrentWeather(double lat, double lon) {
-        // ... (Giữ nguyên)
         apiService.getCurrentWeather(lat, lon, "metric", "vi", API_KEY)
                 .enqueue(new Callback<CurrentWeatherResponse>() {
                     @Override
@@ -136,31 +127,30 @@ public class Weather extends AppCompatActivity {
                                     .into(currentWeatherIcon);
                             currentWeatherIcon.setVisibility(View.VISIBLE);
 
-                            String detailedText = "Gió: " + Math.round(windSpeed) + " m/s";
-                            if (desc.toLowerCase().contains("mưa")) {
-                                detailedText = "Trời có mưa. " + detailedText;
-                            } else if (desc.toLowerCase().contains("mây")) {
-                                detailedText = "Trời nhiều mây. " + detailedText;
+                            String detailedText = "Wind speed: " + Math.round(windSpeed) + " m/s";
+                            if (desc.toLowerCase().contains("Rain")) {
+                                detailedText = "Rainny. " + detailedText;
+                            } else if (desc.toLowerCase().contains("windy")) {
+                                detailedText = "Windy. " + detailedText;
                             }
                             detailedDescription.setText(detailedText);
                             detailedDescription.setVisibility(View.VISIBLE);
 
                         } else {
-                            Toast.makeText(Weather.this, "Không thể tải thời tiết hiện tại", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Weather.this, "Not to Connected (now):", Toast.LENGTH_SHORT).show();
                             Log.e("WEATHER_APP", "CURRENT WEATHER ERROR: " + response.code() + " - " + response.message());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<CurrentWeatherResponse> call, Throwable t) {
-                        Toast.makeText(Weather.this, "Lỗi kết nối (hiện tại): " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Weather.this, "Not to connected (now): " + t.getMessage(), Toast.LENGTH_SHORT).show();
                         Log.e("WEATHER_APP", "CURRENT WEATHER FAILURE: " + t.getMessage(), t);
                     }
                 });
     }
 
     private void getForecast(double lat, double lon) {
-        // ... (Giữ nguyên)
         apiService.getForecast(lat, lon, "metric", "vi", API_KEY)
                 .enqueue(new Callback<ForecastResponse>() {
                     @Override
@@ -184,8 +174,6 @@ public class Weather extends AppCompatActivity {
     }
 
 
-    // ---------------- HIỂN THỊ DỮ LIỆU LÊN GIAO DIỆN ----------------
-
     private void showHourlyForecast(List<ForecastResponse.ForecastItem> list) {
         // ... (Giữ nguyên code của bạn)
         hourlyForecastContainer.removeAllViews();
@@ -204,8 +192,8 @@ public class Weather extends AppCompatActivity {
             hourlyItem.setGravity(Gravity.CENTER_HORIZONTAL);
 
             LinearLayout.LayoutParams itemParams = new LinearLayout.LayoutParams(
-                    widthInPixels, // Chiều rộng cố định
-                    LinearLayout.LayoutParams.WRAP_CONTENT // Chiều cao tự động
+                    widthInPixels,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
             );
             hourlyItem.setLayoutParams(itemParams);
 
@@ -245,7 +233,6 @@ public class Weather extends AppCompatActivity {
     }
 
     private void showDailyForecast(List<ForecastResponse.ForecastItem> list) {
-        // ... (Giữ nguyên code của bạn)
         dailyForecastContainer.removeAllViews();
         SimpleDateFormat sdfDay = new SimpleDateFormat("EEE", new Locale("vi"));
 
@@ -336,15 +323,11 @@ public class Weather extends AppCompatActivity {
         }
     }
 
-    // Hàm viết hoa chữ cái đầu
     private String capitalize(String s) {
         // ... (Giữ nguyên)
         if (s == null || s.isEmpty()) return s;
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
-
-    // ---------------- MODEL ----------------
-    // ... (Giữ nguyên)
     public static class CurrentWeatherResponse {
         public Main main;
         public List<WeatherData> weather;

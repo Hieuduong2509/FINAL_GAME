@@ -1,27 +1,43 @@
 package com.example.myapplication;
 
+import android.content.Context;
+import android.content.ClipboardManager;
+import android.content.ClipData;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView; // 🎨 XÓA DÒNG NÀY NẾU KHÔNG CÒN DÙNG
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager; // Import dòng này
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.myapplication.Models.User;
+import com.example.myapplication.Models.Voucher;
+import com.example.myapplication.Network.ApiClient;
+import com.example.myapplication.Network.ApiResponse;
+import com.example.myapplication.Network.ApiService;
+import com.google.gson.JsonObject; // Import JsonObject
 
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class VoucherFragment extends Fragment {
 
-    RecyclerView mainRecycler;
-    VoucherCategoryAdapter categoryAdapter;
+    private RecyclerView recyclerView;
+    private VoucherAdapter adapter;
+    private List<Voucher> voucherList;
+    private ApiService apiService;
+    private TextView tvCoinCount;
 
     @Nullable
     @Override
@@ -32,153 +48,110 @@ public class VoucherFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainRecycler = view.findViewById(R.id.recycler_voucher_categories);
-        List<VoucherCategory> data = loadMockData();
-        categoryAdapter = new VoucherCategoryAdapter(data);
-        mainRecycler.setAdapter(categoryAdapter);
-    }
 
-    // Hàm tạo dữ liệu mẫu (Giữ nguyên)
-    private List<VoucherCategory> loadMockData() {
-        // ... (Giữ nguyên code của bạn)
-        List<VoucherCategory> categories = new ArrayList<>();
-        List<Voucher> artistVouchers = new ArrayList<>();
-        artistVouchers.add(new Voucher("Sự kiện Sơn Tùng", "Giảm 20%", "Tối đa 100K", "Sơn Tùng M-TP"));
-        artistVouchers.add(new Voucher("Show của Hà Anh Tuấn", "Giảm 15%", "Tối đa 50K", "Hà Anh Tuấn"));
-        categories.add(new VoucherCategory("Nghệ sĩ", artistVouchers));
-        List<Voucher> seminarVouchers = new ArrayList<>();
-        seminarVouchers.add(new Voucher("Hội thảo AI", "Giảm 10%", "Tối đa 30K", "Tech Conference"));
-        categories.add(new VoucherCategory("Hội thảo", seminarVouchers));
-        return categories;
-    }
+        apiService = ApiClient.getApiService();
+        tvCoinCount = view.findViewById(R.id.tv_coin_count);
+        recyclerView = view.findViewById(R.id.recycler_voucher_categories);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-    // 🔹 ----- CÁC CLASS GỘP VÀO ----- 🔹
-
-    // 🔹 1. Model Voucher (Giữ nguyên) 🔹
-    public static class Voucher {
-        String eventName;
-        String discountTitle;
-        String discountSubtitle;
-        String partnerName;
-        public Voucher(String eventName, String discountTitle, String discountSubtitle, String partnerName) {
-            this.eventName = eventName;
-            this.discountTitle = discountTitle;
-            this.discountSubtitle = discountSubtitle;
-            this.partnerName = partnerName;
-        }
-    }
-
-    // 🔹 2. Model VoucherCategory (Giữ nguyên) 🔹
-    public static class VoucherCategory {
-        String categoryTitle;
-        List<Voucher> vouchers;
-        public VoucherCategory(String categoryTitle, List<Voucher> vouchers) {
-            this.categoryTitle = categoryTitle;
-            this.vouchers = vouchers;
-        }
-    }
-
-    // 🔹 3. Adapter DỌC (Đã sửa lỗi LayoutManager) 🔹
-    public static class VoucherCategoryAdapter extends RecyclerView.Adapter<VoucherCategoryAdapter.CategoryViewHolder> {
-        private List<VoucherCategory> categoryList;
-        private final RecyclerView.RecycledViewPool viewPool = new RecyclerView.RecycledViewPool();
-
-        public VoucherCategoryAdapter(List<VoucherCategory> categoryList) {
-            this.categoryList = categoryList;
-        }
-
-        @NonNull
-        @Override
-        public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_voucher_category, parent, false);
-            return new CategoryViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
-            VoucherCategory category = categoryList.get(position);
-            holder.tvCategoryTitle.setText(category.categoryTitle);
-
-            // Cài đặt cho RecyclerView NGANG
-            LinearLayoutManager horizontalLayoutManager = new LinearLayoutManager(
-                    holder.horizontalRecycler.getContext(),
-                    LinearLayoutManager.HORIZONTAL,
-                    false
-            );
-            VoucherCardAdapter cardAdapter = new VoucherCardAdapter(category.vouchers);
-            holder.horizontalRecycler.setLayoutManager(horizontalLayoutManager);
-            holder.horizontalRecycler.setAdapter(cardAdapter);
-            holder.horizontalRecycler.setRecycledViewPool(viewPool);
-        }
-
-        @Override
-        public int getItemCount() {
-            return categoryList.size();
-        }
-
-        static class CategoryViewHolder extends RecyclerView.ViewHolder {
-            TextView tvCategoryTitle;
-            RecyclerView horizontalRecycler;
-            public CategoryViewHolder(@NonNull View itemView) {
-                super(itemView);
-                tvCategoryTitle = itemView.findViewById(R.id.tv_category_title);
-                horizontalRecycler = itemView.findViewById(R.id.recycler_voucher_cards);
+        voucherList = new ArrayList<>();
+        adapter = new VoucherAdapter(getContext(), voucherList, new VoucherAdapter.OnVoucherActionListener(){
+            @Override
+            public void onRedeemClick(Voucher voucher) {
+                showConfirmDialog(voucher);
             }
-        }
+        });
+        recyclerView.setAdapter(adapter);
+        loadUserInfo();
+        loadVouchers();
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadUserInfo();
+        loadVouchers();
+    }
+    private void loadUserInfo() {
+        String userId = ApiClient.getUserIdFromToken();
+        if (userId == null) return;
+
+        apiService.getUserById(userId).enqueue(new Callback<ApiResponse<User>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<User>> call, Response<ApiResponse<User>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    User user = response.body().getData();
+                    tvCoinCount.setText("COINS: " + user.getCoins());
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<User>> call, Throwable t) {}
+        });
+    }
+    private void showConfirmDialog(Voucher voucher) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("ACCEPT")
+                .setMessage("YOU ARE ABOUT TO REDEEM THIS VOUCHER!")
+                .setPositiveButton("Đổi ngay", (dialog, which) -> {
+                    processRedeem(voucher);
+                })
+                .setNegativeButton("CANCEL", null)
+                .show();
     }
 
-    // 🔹 4. Adapter NGANG (Đã sửa lỗi ViewHolder) 🔹
-    public static class VoucherCardAdapter extends RecyclerView.Adapter<VoucherCardAdapter.VoucherCardViewHolder> {
-        private List<Voucher> voucherList;
+    private void processRedeem(Voucher voucher) {
+        // Body request: { "amount": 1000 }
+        JsonObject body = new JsonObject();
+        body.addProperty("amount", 1000);
 
-        public VoucherCardAdapter(List<Voucher> voucherList) {
-            this.voucherList = voucherList;
-        }
+        apiService.deductCoins(body).enqueue(new Callback<ApiResponse<JsonObject>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<JsonObject>> call, Response<ApiResponse<JsonObject>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
+                    copyToClipboard(voucher.getCode());
+                    Toast.makeText(getContext(), "COPY SUCCESS", Toast.LENGTH_LONG).show();
+                    try {
+                        int coinsLeft = response.body().getData().get("coinsLeft").getAsInt();
+                        tvCoinCount.setText("COINS: " + coinsLeft);
+                    } catch (Exception e) {
+                        loadUserInfo();
+                    }
 
-        @NonNull
-        @Override
-        public VoucherCardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            // Đảm bảo tên layout này khớp (XML bạn gửi có vẻ thiếu thẻ đóng)
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_voucher_card, parent, false);
-            return new VoucherCardViewHolder(view);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull VoucherCardViewHolder holder, int position) {
-            Voucher voucher = voucherList.get(position);
-            holder.tvPartnerName.setText(voucher.partnerName);
-            holder.tvDiscountTitle.setText(voucher.discountTitle);
-            holder.tvDiscountSubtitle.setText(voucher.discountSubtitle);
-
-            holder.btnCollect.setOnClickListener(v -> {
-                Toast.makeText(v.getContext(), "Đã thu thập: " + voucher.discountTitle, Toast.LENGTH_SHORT).show();
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return voucherList.size();
-        }
-
-        // 🎨 ----- BẮT ĐẦU SỬA LỖI ----- 🎨
-        static class VoucherCardViewHolder extends RecyclerView.ViewHolder {
-            // Xóa 2 dòng ImageView
-            // ImageView ivBanner, ivLogo;
-            TextView tvPartnerName, tvDiscountTitle, tvDiscountSubtitle;
-            Button btnCollect;
-
-            public VoucherCardViewHolder(@NonNull View itemView) {
-                super(itemView);
-                // Xóa 2 dòng findViewById
-                // ivBanner = itemView.findViewById(R.id.iv_voucher_banner);
-                // ivLogo = itemView.findViewById(R.id.iv_partner_logo);
-
-                tvPartnerName = itemView.findViewById(R.id.tv_partner_name);
-                tvDiscountTitle = itemView.findViewById(R.id.tv_discount_title);
-                tvDiscountSubtitle = itemView.findViewById(R.id.tv_discount_subtitle);
-                btnCollect = itemView.findViewById(R.id.btn_collect);
+                } else {
+                    String msg = "FAIL";
+                    if (response.body() != null) msg = response.body().getMessage();
+                    Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+                }
             }
-        }
-        // 🎨 ----- KẾT THÚC SỬA LỖI ----- 🎨
+
+            @Override
+            public void onFailure(Call<ApiResponse<JsonObject>> call, Throwable t) {
+                Toast.makeText(getContext(), "ERROR!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void copyToClipboard(String text) {
+        if (getContext() == null) return;
+        ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Voucher Code", text);
+        clipboard.setPrimaryClip(clip);
+    }
+
+    private void loadVouchers() {
+        apiService.getAllVouchers().enqueue(new Callback<ApiResponse<List<Voucher>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<Voucher>>> call, Response<ApiResponse<List<Voucher>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Voucher> list = response.body().getData();
+                    if (list != null) {
+                        voucherList.clear();
+                        voucherList.addAll(list);
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<List<Voucher>>> call, Throwable t) {}
+        });
     }
 }

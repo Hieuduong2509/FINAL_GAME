@@ -28,7 +28,7 @@ public class signUp extends AppCompatActivity {
     Button register, signIn;
     EditText userName, email, pass, confirmPass;
     CheckBox agree;
-    private ApiService apiService; // 🔹 THÊM BIẾN API SERVICE
+    private ApiService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +36,6 @@ public class signUp extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.signup);
 
-        // 🔹 KHỞI TẠO API CLIENT
         apiService = ApiClient.getApiService();
 
         register = findViewById(R.id.register);
@@ -54,26 +53,22 @@ public class signUp extends AppCompatActivity {
                 String e = email.getText().toString().trim(); // Email
                 String p = pass.getText().toString().trim(); // Pass
                 String cp = confirmPass.getText().toString().trim(); // ConfPass
-
-                // 🔹 CHỈ GIỮ LẠI VALIDATE LOGIC CƠ BẢN (Backend đã lo hashing và kiểm tra trùng lặp)
                 if (u.isEmpty() || e.isEmpty() || p.isEmpty() || cp.isEmpty()) {
-                    Toast.makeText(signUp.this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(signUp.this, "PLEASE ENTER ALL FIELDS", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (!Patterns.EMAIL_ADDRESS.matcher(e).matches()) {
-                    Toast.makeText(signUp.this, "Email không hợp lệ", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(signUp.this, "Email Invalid", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (!p.equals(cp)) {
-                    Toast.makeText(signUp.this, "Confirm password không khớp", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(signUp.this, "Confirm password does not match", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (!agree.isChecked()) {
-                    Toast.makeText(signUp.this, "Bạn phải đồng ý điều khoản", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(signUp.this, "Please agree to the terms and conditions", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
-                // 🔹 GỌI API REGISTER 🔹
                 performRegistration(u, e, p);
             }
         });
@@ -88,9 +83,7 @@ public class signUp extends AppCompatActivity {
         });
     }
 
-    // 🔹 LOGIC CHECK PASS NÀY CÓ THỂ ĐƯỢC XOÁ HOẶC GIỮ NẾU BACKEND KHÔNG ÉP BUỘC ĐỘ DÀI
     boolean checkPass(String pass) {
-        // Giữ lại logic của bạn: phải có ít nhất 1 thường, 1 hoa
         boolean hasLow = false, hasUp = false;
         for (char c : pass.toCharArray()) {
             if (Character.isUpperCase(c)) hasUp = true;
@@ -100,21 +93,18 @@ public class signUp extends AppCompatActivity {
         return false;
     }
 
-    // 🔹 HÀM GỌI API REGISTER
     private void performRegistration(String fullname, String email, String password) {
         RegisterRequest request = new RegisterRequest(fullname, email, password);
         apiService.register(request).enqueue(new Callback<ApiResponse<AuthResponse>>() {
             @Override
             public void onResponse(Call<ApiResponse<AuthResponse>> call, Response<ApiResponse<AuthResponse>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    // Đăng ký thành công, chuyển sang màn hình Login
-                    Toast.makeText(signUp.this, "Đăng ký thành công! Vui lòng đăng nhập.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(signUp.this, "SIGN UP SUCCESSFUL.", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(signUp.this, Login.class);
                     startActivity(intent);
                     finish();
                 } else {
-                    // Lỗi: Email đã tồn tại hoặc lỗi khác từ server
-                    String message = response.body() != null ? response.body().getMessage() : "Đăng ký thất bại. Vui lòng thử lại.";
+                    String message = response.body() != null ? response.body().getMessage() : "Failed to register.";
                     Toast.makeText(signUp.this, message, Toast.LENGTH_LONG).show();
                     Log.e("REGISTER_API", "Error: " + response.code() + ", Message: " + message);
                 }
@@ -122,7 +112,7 @@ public class signUp extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<AuthResponse>> call, Throwable t) {
-                Toast.makeText(signUp.this, "Lỗi kết nối: Không thể kết nối đến server.", Toast.LENGTH_LONG).show();
+                Toast.makeText(signUp.this, "Failed to register.", Toast.LENGTH_LONG).show();
                 Log.e("REGISTER_API", "Failure: " + t.getMessage(), t);
             }
         });

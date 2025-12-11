@@ -8,5 +8,5 @@ public class OrderPaymentResponse implements Serializable {
     public double newBalance;
 
     @SerializedName("order")
-    public Object order; // Có thể map chi tiết nếu cần
+    public Object order;
 }

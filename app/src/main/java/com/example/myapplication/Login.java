@@ -1,17 +1,14 @@
-// File: com.example.myapplication.Login.java
-
 package com.example.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,8 +28,11 @@ public class Login extends AppCompatActivity {
     CheckBox remember;
 
     SharedPreferences sharedPreferences;
-    public static final String MY_PREFS = "MyLoginPrefs";
+
+    public static final String SHARED_PREF_NAME = "prefShare";
+    public static final String KEY_USER_ID = "USER_ID";
     public static final String KEY_EMAIL = "email";
+    public static final String KEY_PASS = "password";
     public static final String KEY_REMEMBER = "remember";
 
     private ApiService apiService;
@@ -42,9 +42,10 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
-        // 🔹 KHỞI TẠO API CLIENT
         ApiClient.initialize(getApplicationContext());
         apiService = ApiClient.getApiService();
+        sharedPreferences = getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        checkAutoLogin();
 
         login = findViewById(R.id.btnLogin);
         signUp = findViewById(R.id.signUp);
@@ -52,38 +53,53 @@ public class Login extends AppCompatActivity {
         pass = findViewById(R.id.password);
         forgotPass = findViewById(R.id.forgot);
         remember = findViewById(R.id.remember);
-
-        // 💡 sharedPreferences dùng cho EMAIL và USER_ID
-        sharedPreferences = getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE);
-
-        loadPreferences();
+        loadSavedCredentials();
 
         login.setOnClickListener(v -> {
             String emailStr = userName.getText().toString().trim();
             String passwordStr = pass.getText().toString().trim();
 
             if(emailStr.isEmpty() || passwordStr.isEmpty()){
-                Toast.makeText(Login.this, "Vui lòng nhập Email và Mật khẩu", Toast.LENGTH_SHORT).show();
-            }
-            else {
+                Toast.makeText(Login.this, "Please enter email and password.", Toast.LENGTH_SHORT).show();
+            } else {
                 performLogin(emailStr, passwordStr);
             }
         });
 
         forgotPass.setOnClickListener(v -> {
-            Toast.makeText(Login.this, "Tính năng Quên Mật Khẩu chưa sẵn sàng.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Login.this, ForgotPasswordActivity.class);
+            startActivity(intent);
         });
 
-        signUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Login.this, signUp.class);
-                startActivity(intent);
-            }
+        signUp.setOnClickListener(v -> {
+            Intent intent = new Intent(Login.this, signUp.class);
+            startActivity(intent);
         });
     }
+    private void checkAutoLogin() {
+        String token = ApiClient.getToken();
+        boolean isRemembered = sharedPreferences.getBoolean(KEY_REMEMBER, false);
+        if (token != null && isRemembered) {
+            String savedEmail = sharedPreferences.getString(KEY_EMAIL, "User");
+            Toast.makeText(Login.this, "Welcome back, " + savedEmail + "!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Login.this, HomeActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
 
-    // 🔹 HÀM GỌI API LOGIN
+    private void loadSavedCredentials() {
+        boolean isRemembered = sharedPreferences.getBoolean(KEY_REMEMBER, false);
+        if (isRemembered) {
+            String savedEmail = sharedPreferences.getString(KEY_EMAIL, "");
+            String savedPass = sharedPreferences.getString(KEY_PASS, "");
+
+            userName.setText(savedEmail);
+            pass.setText(savedPass);
+            remember.setChecked(true);
+        }
+    }
+
     private void performLogin(String email, String password) {
         LoginRequest request = new LoginRequest(email, password);
         apiService.login(request).enqueue(new Callback<ApiResponse<AuthResponse>>() {
@@ -92,75 +108,38 @@ public class Login extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
 
                     AuthResponse authData = response.body().getData();
-                    String accessToken = authData.getAccessToken();
-                    String userId = authData.getUser().getUserId();
+                    ApiClient.saveToken(authData.getAccessToken());
 
-                    // 💡 LƯU TOKEN QUA API CLIENT MỚI (Khắc phục lỗi 401)
-                    ApiClient.saveToken(accessToken);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(KEY_USER_ID, authData.getUser().getUserId());
 
-                    // LƯU USERID và TÙY CHỌN REMEMBER ME
+                    // LOGIC LƯU TRẠNG THÁI
                     if (remember.isChecked()) {
-                        savePreferences(email, userId);
+                        editor.putString(KEY_EMAIL, email);
+                        editor.putString(KEY_PASS, password);
+                        editor.putBoolean(KEY_REMEMBER, true);
                     } else {
-                        clearPreferences();
-                        saveUserId(userId);
+                        editor.remove(KEY_EMAIL);
+                        editor.remove(KEY_PASS);
+                        editor.remove(KEY_REMEMBER);
                     }
+                    editor.apply();
 
-                    Toast.makeText(Login.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Login.this, "Login Success!", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(Login.this, HomeActivity.class);
                     startActivity(intent);
                     finish();
 
                 } else {
-                    String message = response.body() != null ? response.body().getMessage() : "Sai email hoặc mật khẩu";
-                    Toast.makeText(Login.this, "Đăng nhập thất bại: " + message, Toast.LENGTH_LONG).show();
-                    Log.e("LOGIN_API", "Error: " + response.code() + ", Message: " + message);
+                    String message = response.body() != null ? response.body().getMessage() : "Wrong email or password.";
+                    Toast.makeText(Login.this, "Error: " + message, Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<AuthResponse>> call, Throwable t) {
-                Toast.makeText(Login.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_LONG).show();
-                Log.e("LOGIN_API", "Failure: " + t.getMessage(), t);
+                Toast.makeText(Login.this, "Error connection", Toast.LENGTH_LONG).show();
             }
         });
-    }
-
-    // 🔹 ----- CÁC HÀM LƯU VÀ TẢI (CẬP NHẬT) ----- 🔹
-    private void savePreferences(String email, String userId) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(KEY_EMAIL, email);
-        editor.putString("USER_ID", userId);
-        editor.putBoolean(KEY_REMEMBER, true);
-        editor.apply();
-    }
-
-    private void saveUserId(String userId) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("USER_ID", userId);
-        editor.apply();
-    }
-
-    private void clearPreferences() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        // Xóa tất cả các pref trong MY_PREFS
-        editor.clear();
-        editor.apply();
-        // Xóa token riêng biệt trong AuthPrefs (thực tế đang dùng MY_PREFS)
-        ApiClient.clearToken();
-    }
-
-    private void loadPreferences() {
-        boolean isRemembered = sharedPreferences.getBoolean(KEY_REMEMBER, false);
-        String token = ApiClient.getToken(); // LẤY TOKEN TỪ API CLIENT MỚI
-
-        if (isRemembered) {
-            String email = sharedPreferences.getString(KEY_EMAIL, "");
-
-            if (!email.isEmpty() && token != null) {
-                userName.setText(email);
-                remember.setChecked(true);
-            }
-        }
     }
 }

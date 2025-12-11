@@ -23,6 +23,24 @@
         app:tint="#64CCC5"
         tools:ignore="TouchTargetSizeCheck" />
 
+    <TextView
+        android:id="@+id/tv_notification_badge"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/badge_background"
+        android:elevation="10dp"
+        android:gravity="center"
+        android:text="0"
+        android:textColor="@android:color/white"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/icon_notification"
+        app:layout_constraintTop_toTopOf="@id/icon_notification"
+        tools:visibility="visible" />
+
     <EditText
         android:id="@+id/search_bar"
         android:layout_width="0dp"
@@ -33,13 +51,18 @@
         android:drawableStart="@android:drawable/ic_menu_search"
         android:drawablePadding="12dp"
         android:drawableTint="#64CCC5"
-        android:hint="Tìm kiếm sự kiện, nghệ sĩ..."
+        android:hint="SEARCH EVENTS..."
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:textColorHint="#176B87"
         android:textColor="#001C30"
         android:maxLines="1"
-        android:inputType="text"
+        android:inputType="none"
+
+        android:focusable="false"
+        android:clickable="true"
+        android:focusableInTouchMode="false"
+
         app:layout_constraintBottom_toBottomOf="@id/icon_notification"
         app:layout_constraintEnd_toStartOf="@id/icon_notification"
         app:layout_constraintStart_toStartOf="parent"
@@ -69,19 +92,36 @@
                 app:cardCornerRadius="16dp"
                 app:cardBackgroundColor="#FFFFE0">
 
-                <GridLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:columnCount="4"
-                    android:padding="10dp"
-                    android:layout_margin="10dp"
-                    android:rowCount="1">
+                    android:orientation="horizontal"
+                    android:paddingVertical="16dp"
+                    android:paddingHorizontal="8dp"
+                    android:baselineAligned="false">
 
-                    <include layout="@layout/item_function" android:id="@+id/func_buy_ticket" />
-                    <include layout="@layout/item_function" android:id="@+id/func_orders" />
-                    <include layout="@layout/item_function" android:id="@+id/func_voucher" />
-                    <include layout="@layout/item_function" android:id="@+id/func_profile" />
-                </GridLayout>
+                    <include
+                        layout="@layout/item_function"
+                        android:id="@+id/func_buy_ticket"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <include
+                        layout="@layout/item_function"
+                        android:id="@+id/func_orders"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                    <include
+                        layout="@layout/item_function"
+                        android:id="@+id/func_voucher"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+
+                </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
@@ -106,9 +146,9 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Thời Tiết"
+                    android:text="WEATHER"
                     android:textColor="#176B87"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <com.google.android.material.card.MaterialCardView
@@ -135,6 +175,7 @@
                             android:textStyle="bold"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
+
                         <TextView
                             android:id="@+id/weather_snippet_status"
                             android:layout_width="wrap_content"
@@ -174,7 +215,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:paddingTop="5dp"
-                            android:text="Chi tiết"
+                            android:text="DETAIL"
                             android:textColor="@android:color/white"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent" />
@@ -183,82 +224,6 @@
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingTop="16dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="Vé Của Tôi"
-                    android:textColor="#176B87"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:scrollbars="none">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
-                            android:layout_height="100dp"
-                            android:layout_marginEnd="12dp"
-                            app:cardBackgroundColor="#176B87"
-                            app:cardCornerRadius="8dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Nội dung tin tức 1..."
-                                android:textColor="@android:color/white" />
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
-                            android:layout_height="100dp"
-                            android:layout_marginEnd="12dp"
-                            app:cardBackgroundColor="#176B87"
-                            app:cardCornerRadius="8dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Nội dung tin tức 2..."
-                                android:textColor="@android:color/white" />
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
-                            android:layout_height="100dp"
-                            app:cardBackgroundColor="#176B87"
-                            app:cardCornerRadius="8dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Nội dung tin tức 3..."
-                                android:textColor="@android:color/white" />
-                        </com.google.android.material.card.MaterialCardView>
-                    </LinearLayout>
-                </HorizontalScrollView>
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -272,7 +237,7 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Sự Kiện Nổi Bật"
+                    android:text="EVENTS"
                     android:textColor="#176B87"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -288,6 +253,7 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_featured_event" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -300,7 +266,37 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="8dp"
-                    android:text="Nghệ Sĩ Hàng Đầu"
+                    android:text="FEATURED ARTIST"
+                    android:textColor="#176B87"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_top_artists"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:clipToPadding="false"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/item_home_artist" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="16dp"
+                android:paddingBottom="30dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="NEWS"
                     android:textColor="#176B87"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -319,129 +315,190 @@
                         android:orientation="horizontal">
 
                         <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
+                            android:layout_width="260dp"
                             android:layout_height="100dp"
                             android:layout_marginEnd="12dp"
-                            app:cardBackgroundColor="#176B87"
-                            app:cardCornerRadius="8dp">
+                            app:cardBackgroundColor="#64CCC5"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            android:clickable="false"
+                            android:focusable="false">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Nội dung tin tức 1..."
-                                android:textColor="@android:color/white" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical"
+                                android:padding="12dp"
+                                android:gravity="center_vertical">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical">
+
+                                    <ImageView
+                                        android:layout_width="20dp"
+                                        android:layout_height="20dp"
+                                        android:layout_marginEnd="6dp"
+                                        android:src="@drawable/nest_farsight_weather_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+                                        app:tint="@android:color/white" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="WEATHER WARNING"
+                                        android:textStyle="bold"
+                                        android:textColor="@android:color/white"
+                                        android:textSize="14sp"/>
+                                </LinearLayout>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="There may be showers in Ho Chi Minh City this afternoon. Bring an umbrella when you go to the show.! "
+                                    android:textColor="#E0F7FA"
+                                    android:textSize="13sp"
+                                    android:maxLines="3"
+                                    android:ellipsize="end"/>
+                            </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
                         <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
+                            android:layout_width="260dp"
                             android:layout_height="100dp"
                             android:layout_marginEnd="12dp"
                             app:cardBackgroundColor="#176B87"
-                            app:cardCornerRadius="8dp">
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            android:clickable="false"
+                            android:focusable="false">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Nội dung tin tức 2..."
-                                android:textColor="@android:color/white" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical"
+                                android:padding="12dp"
+                                android:gravity="center_vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="HOT EVENTS"
+                                    android:textStyle="bold"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="14sp"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="EDM Storm concert will open Early Bird tickets at 9:00 am tomorrow."
+                                    android:textColor="#B2EBF2"
+                                    android:textSize="13sp"
+                                    android:maxLines="3"
+                                    android:ellipsize="end"/>
+                            </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
 
                         <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
+                            android:layout_width="260dp"
                             android:layout_height="100dp"
-                            app:cardBackgroundColor="#176B87"
-                            app:cardCornerRadius="8dp">
+                            app:cardBackgroundColor="#001C30"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="2dp"
+                            android:clickable="false"
+                            android:focusable="false">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Nội dung tin tức 3..."
-                                android:textColor="@android:color/white" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical"
+                                android:padding="12dp"
+                                android:gravity="center_vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="NOTIFICATION"
+                                    android:textStyle="bold"
+                                    android:textColor="@android:color/white"
+                                    android:textSize="14sp"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:text="Deposit feature maintenance from 2:00 - 4:00 AM on December 15."
+                                    android:textColor="#CFD8DC"
+                                    android:textSize="13sp"
+                                    android:maxLines="3"
+                                    android:ellipsize="end"/>
+                            </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
+
                     </LinearLayout>
                 </HorizontalScrollView>
             </LinearLayout>
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="16dp">
+                android:paddingTop="16dp"
+                android:paddingBottom="100dp"> <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Nearby pubs"
+                android:textColor="#176B87"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-                <TextView
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_map_explore"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="Tin Tức"
-                    android:textColor="#176B87"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clipToPadding="false"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:scrollbars="none">
+                    android:layout_height="150dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="#E0F7FA">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:gravity="center">
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
-                            android:layout_height="100dp"
-                            android:layout_marginEnd="12dp"
-                            app:cardBackgroundColor="#176B87"
-                            app:cardCornerRadius="8dp">
+                        <ImageView
+                            android:layout_width="56dp"
+                            android:layout_height="56dp"
+                            android:src="@drawable/location_on_24dp_e3e3e3_fill0_wght400_grad0_opsz24"
+                            app:tint="#00BCD4"
+                            android:layout_marginBottom="8dp"/>
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Nội dung tin tức 1..."
-                                android:textColor="@android:color/white" />
-                        </com.google.android.material.card.MaterialCardView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Find Restaurants &amp; Events Map"
+                            android:textColor="#006064"
+                            android:textSize="16sp"
+                            android:textStyle="bold"/>
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
-                            android:layout_height="100dp"
-                            android:layout_marginEnd="12dp"
-                            app:cardBackgroundColor="#176B87"
-                            app:cardCornerRadius="8dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Nội dung tin tức 2..."
-                                android:textColor="@android:color/white" />
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="280dp"
-                            android:layout_height="100dp"
-                            app:cardBackgroundColor="#176B87"
-                            app:cardCornerRadius="8dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="Nội dung tin tức 3..."
-                                android:textColor="@android:color/white" />
-                        </com.google.android.material.card.MaterialCardView>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Click to open map"
+                            android:textColor="#00838F"
+                            android:textSize="12sp"
+                            android:layout_marginTop="4dp"/>
                     </LinearLayout>
-                </HorizontalScrollView>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
-
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
